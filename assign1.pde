@@ -1,92 +1,80 @@
-SlotMachine machine;
-boolean rolling = false;
-// button information
-boolean button = false;
-int x = 640/2;
-int y = 440;
-int w = 150;
-int h = 50;
-
-// declare variables
-// --------------------------------------------
-// put your code inside here
-int totalScore = 0;
-
-// --------------------------------------------
-
-void setup() {
-  size(640,480);
-  textFont(createFont("fonts/Square_One.ttf", 20));
-  machine = new SlotMachine();
-}
-
-void draw() {
-  background(245,229,124);
-  fill(64,162,171);
-  rect(320,248,396,154,25);
-  fill(253,253,253);
-  rect(220,247,97,114,2);
-  rect(320,247,97,114,2);
-  rect(420,247,97,114,2);
-  // draw button
-  fill(64,162,171);
-  noStroke();
-  rectMode(CENTER);
-  rect(x,y,w,h,105);
-  // show title
-  fill(64,64,63);
-  textAlign(CENTER, CENTER);
-  textSize(32);
-  text("Slot Machine",x,49);
-  textSize(20);
-  text("Score"+" "+":"+" "+totalScore,x, 89);
+class SlotMachine{
+  int initX = 170;
+  int initY = 200;
+  int m=3, n=1;
+  int [] fruitNumbers = {0,1,2,3,4,5};
+  int [] fruitScores = {60,10,20,30,40,50};
+  Fruit [] fruits; 
+  Fruit [][] animatedSlots;  // this one is for animation
+  Fruit [][] slots;          // this one is for assignment use,
+                             // students can only access "slots"
   
-  // event handler
-  if (button) {
-    if (!rolling){
-      rolling = true;
-      // start rolling
-      // -------------------------------------------------
-      // put your code inside here
-      
-      
-      // -------------------------------------------------
+  SlotMachine(){
+    // setup fruits
+    fruits = new Fruit[fruitNumbers.length];
+    for (int i=0; i<fruitNumbers.length; i++){
+      fruits[i] = new Fruit(fruitNumbers[i], fruitScores[i]);
     }
-    machine.roll();
-    textSize(19);
-    text("Stop",x,y);
-  
-  } else {
-    if (rolling){
-      rolling = false;
-      // stop rolling
-      // -------------------------------------------------
-      // put your code inside here
-      
- 
- 
- 
-      
-      // -------------------------------------------------
-    }
-    machine.stop();
-    fill(253,253,253);
-    textSize(19);
-    text("Roll",x,y);
+    // init slots
+    animatedSlots = new Fruit[m][n];
+    slots = new Fruit[m][n];
+
+    initSlot();
   }
-
+  
+  void initSlot(){
+    for (int i=0; i<m; i++){
+      for (int j=0; j<n; j++){
+        setSlotFruit(i,0); 
+      }
+    }
+  }
+  
+  // easy version
+  void setSlotFruit(int x, int fid){
+    slots[x][0] = fruits[fid];
+  }
+  
+  void displaySlots(){
+    for (int i=0; i<m; i++){
+      for (int j=0; j<n; j++){
+        slots[i][j].display(initX+i*100,initY+j*100,100,100);
+      }
+    }
+  }
+  
+  void roll(){
+    for (int i=0; i<m; i++){
+      for (int j=0; j<n; j++){
+        int rnd = int(random(fruitNumbers.length));
+        animatedSlots[i][j] = fruits[rnd];
+        animatedSlots[i][j].display(initX+i*100,initY+j*100,100,100);
+      }
+    }
+  }
+  
+  void stop(){
+    displaySlots();
+  }
+  
+  int getSlotScore(int num){
+    return fruitScores[num];
+  }
+  
+  int getFruitCount(int fid){
+    int count=0;
+    for (int i=0; i<m; i++){
+      for (int j=0; j<n; j++){
+        if ( slots[i][j].fruitId == fid){
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+  
+  int probability(float p){
+    return ( random(1) < p ? 1 : 0);
+  }
+  
 }
-
-// When the mouse is pressed, the state of the button is toggled.   
-void mousePressed() {
-  if (mouseX > x-w/2 && mouseX < x+w/2 && mouseY > y-h/2 && mouseY < y+h/2) {
-    button = !button;
-  }  
-}
-
-
-
-
-
-
-
